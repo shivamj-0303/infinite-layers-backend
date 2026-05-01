@@ -37,5 +37,5 @@ ENV JAVA_OPTS="-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+ParallelRefProcEnabled
 HEALTHCHECK --interval=30s --timeout=10s --start-period=45s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/actuator/health || exit 1
 
-# Start application with proper error handling and output
-CMD ["java", "-jar", "app.jar"]
+# Start application - use shell to expand JAVA_OPTS environment variable
+CMD ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
