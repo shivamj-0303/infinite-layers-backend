@@ -16,6 +16,7 @@
     <!-- File Appender with Rolling Policy -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_FILE}</file>
+        <prudent>false</prudent>
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
             <charset>UTF-8</charset>
@@ -26,6 +27,7 @@
             <maxHistory>${LOG_FILE_MAX_HISTORY}</maxHistory>
             <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
+        <immediateFlush>true</immediateFlush>
     </appender>
 
     <!-- Async Appender for better performance -->
@@ -46,7 +48,7 @@
     <!-- Spring Profiles -->
     <springProfile name="prod">
         <root level="WARN">
-            <appender-ref ref="ASYNC_FILE"/>
+            <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 

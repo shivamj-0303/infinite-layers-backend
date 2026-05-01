@@ -19,8 +19,10 @@ WORKDIR /app
 # Copy application JAR from builder
 COPY --from=builder /app/target/*.jar app.jar
 
-# Create logs directory with proper permissions
-RUN mkdir -p /app/logs && chmod 755 /app && chmod 755 /app/logs
+# Create logs directory with proper permissions BEFORE switching user
+RUN mkdir -p /app/logs && \
+    chmod 777 /app && \
+    chmod 777 /app/logs
 
 # Switch to non-root user
 USER appuser
