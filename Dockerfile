@@ -19,21 +19,21 @@ WORKDIR /app
 # Copy application JAR from builder
 COPY --from=builder /app/target/*.jar app.jar
 
-# Create logs directory
-RUN mkdir -p /app/logs && chown -R appuser:appuser /app
+# Create logs directory with proper permissions
+RUN mkdir -p /app/logs && chmod 755 /app && chmod 755 /app/logs
 
 # Switch to non-root user
 USER appuser
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/actuator/health || exit 1
-
-# Expose port
+# Expose port (must match server.port in application-prod.properties)
 EXPOSE 8080
 
-# JVM arguments for production
-ENV JAVA_OPTS="-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+ParallelRefProcEnabled -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1 -Dfile.encoding=UTF-8"
+# JVM arguments for production (optimized for Render's containerized environment)
+ENV JAVA_OPTS="-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+ParallelRefProcEnabled -Dfile.encoding=UTF-8 -Dspring.profiles.active=prod"
 
-# Start application
-ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -Dspring.profiles.active=prod -jar app.jar"]
+# Health check (waits 40 seconds before starting checks)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=45s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/actuator/health || exit 1
+
+# Start application with proper error handling and output
+CMD ["java", "-jar", "app.jar"]
