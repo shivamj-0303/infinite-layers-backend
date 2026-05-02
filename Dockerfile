@@ -39,4 +39,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=45s --retries=3 \
 
 # Start application - expand JAVA_OPTS and pass environment variables as JVM system properties
 # DB_URL now includes credentials (Session Pooler format), so no need for separate username/password
-CMD ["sh", "-c", "echo DB_USERNAME=$DB_USERNAME && java $JAVA_OPTS -jar app.jar"]
+CMD ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

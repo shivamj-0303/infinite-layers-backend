@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -66,6 +67,7 @@ public class SecurityConfig {
                 .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
                 .contentTypeOptions(contentType -> contentType.disable()))
             .authorizeHttpRequests(authz -> authz
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/public/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
@@ -90,8 +92,20 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
-        configuration.setAllowedMethods(Arrays.asList(allowedMethods.split(",")));
+        // Split and trim whitespace from origins to handle env var formatting
+        configuration.setAllowedOrigins(
+            Arrays.asList(allowedOrigins.split(","))
+                .stream()
+                .map(String::trim)
+                .toList()
+        );
+        // Split and trim whitespace from methods
+        configuration.setAllowedMethods(
+            Arrays.asList(allowedMethods.split(","))
+                .stream()
+                .map(String::trim)
+                .toList()
+        );
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(corsMaxAge);
