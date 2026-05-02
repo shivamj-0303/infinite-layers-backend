@@ -38,5 +38,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=45s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/actuator/health || exit 1
 
 # Start application - expand JAVA_OPTS and pass environment variables as JVM system properties
-# This ensures Render's env vars (DB_URL, DB_USERNAME, DB_PASSWORD, JWT_SECRET) are passed to the Spring Boot app
-CMD ["sh", "-c", "java $JAVA_OPTS -Dspring.datasource.url=$DB_URL -Dspring.datasource.username=$DB_USERNAME -Dspring.datasource.password=$DB_PASSWORD -Dapp.jwt.secret=$JWT_SECRET -jar app.jar"]
+# DB_URL now includes credentials (Session Pooler format), so no need for separate username/password
+CMD ["sh", "-c", "echo DB_USERNAME=$DB_USERNAME && java $JAVA_OPTS -jar app.jar"]
