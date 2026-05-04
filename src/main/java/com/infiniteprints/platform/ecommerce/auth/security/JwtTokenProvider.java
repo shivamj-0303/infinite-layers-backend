@@ -42,6 +42,15 @@ public class JwtTokenProvider {
      */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+
+        claims.put(
+            "roles",
+            userDetails.getAuthorities()
+                .stream()
+                .map(auth -> auth.getAuthority())
+                .toList()
+        );
+
         return createToken(claims, userDetails.getUsername(), jwtExpirationMs);
     }
 
@@ -99,7 +108,7 @@ public class JwtTokenProvider {
     /**
      * Get all claims from token
      */
-    private Claims getAllClaimsFromToken(String token) {
+    public Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()

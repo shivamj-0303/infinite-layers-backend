@@ -51,10 +51,32 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        var auth = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+        var auth = new UsernamePasswordAuthenticationToken(
+                request.getEmail(),
+                request.getPassword()
+        );
+
         authenticationManager.authenticate(auth);
 
-        String token = tokenProvider.generateToken(request.getEmail(), new java.util.HashMap<>());
-        return ResponseEntity.ok(new AuthResponse(token));
+        var user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        var authorities = user.getRoles().stream()
+                .map(role -> new org.springframework.security.core.authority.SimpleGrantedAuthority(role))
+                .toList();
+
+        var userDetails = new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                authorities
+        );
+
+        String token = tokenProvider.generateToken(userDetails);
+
+        // Create response with token and user data
+        var response = new AuthResponse(token);
+        response.setUser(user);  // Include user object
+        
+        return ResponseEntity.ok(response);
     }
 }
