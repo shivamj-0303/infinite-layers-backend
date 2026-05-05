@@ -11,6 +11,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import com.infiniteprints.platform.ecommerce.auth.entity.User;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -40,19 +41,18 @@ public class JwtTokenProvider {
     /**
      * Generate JWT token from UserDetails
      */
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
 
         claims.put(
             "roles",
-            userDetails.getAuthorities()
-                .stream()
-                .map(auth -> auth.getAuthority())
-                .toList()
+            user.getRoles()
         );
 
-        return createToken(claims, userDetails.getUsername(), jwtExpirationMs);
-    }
+        claims.put("email", user.getEmail()); // optional but useful
+
+        return createToken(claims, user.getId().toString(), jwtExpirationMs);
+    }  
 
     /**
      * Generate JWT token with custom claims

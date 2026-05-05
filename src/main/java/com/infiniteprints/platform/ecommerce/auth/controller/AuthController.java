@@ -65,13 +65,7 @@ public class AuthController {
                 .map(role -> new org.springframework.security.core.authority.SimpleGrantedAuthority(role))
                 .toList();
 
-        var userDetails = new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                authorities
-        );
-
-        String token = tokenProvider.generateToken(userDetails);
+        String token = tokenProvider.generateToken(user);
 
         // Create response with token and user data
         var response = new AuthResponse(token);
