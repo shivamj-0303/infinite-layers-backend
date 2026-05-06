@@ -52,7 +52,14 @@ public class CartService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        if (product.getStockQuantity() < qty) {
+        Integer stock = product.getStockQuantity() == null ? 0 : product.getStockQuantity();
+
+        int existingQty = cart.getItems().stream()
+                .filter(i -> i.getProductId().equals(productId))
+                .mapToInt(CartItem::getQuantity)
+                .sum();
+
+        if (stock < existingQty + qty) {
             throw new RuntimeException("Insufficient stock");
         }
 
