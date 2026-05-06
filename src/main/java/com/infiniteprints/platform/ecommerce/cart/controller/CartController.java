@@ -62,4 +62,9 @@ public class CartController {
                 req.quantity
         );
     }
+
+    @DeleteMapping("/items/{itemId}")
+    public CartResponse removeItem(Principal p, @PathVariable UUID itemId) {
+        return cartService.removeItem(getUserId(p), itemId);
+    }
 }

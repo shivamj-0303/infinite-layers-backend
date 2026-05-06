@@ -31,7 +31,7 @@ public class Cart {
     @OneToMany(mappedBy = "cart",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    private List<CartItem> items = new ArrayList<>();
+    private final List<CartItem> items = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt = Instant.now();
@@ -59,7 +59,7 @@ public class Cart {
     }
 
     public List<CartItem> getItems() {
-        return items;
+        return java.util.Collections.unmodifiableList(items);
     }
 
     public Instant getCreatedAt() {
@@ -90,12 +90,24 @@ public class Cart {
     // ===== HELPER METHODS (CRITICAL) =====
 
     public void addItem(CartItem item) {
+        if (item == null) return;
+
         item.setCart(this);
+
+        // prevent duplicates by productId (VERY important)
+        this.items.removeIf(i ->
+                i.getProductId().equals(item.getProductId())
+        );
+
         this.items.add(item);
     }
 
     public void removeItem(CartItem item) {
+        if (item == null) return;
+
         item.setCart(null);
-        this.items.remove(item);
+        this.items.removeIf(i ->
+                i.getId().equals(item.getId())
+        );
     }
 }
