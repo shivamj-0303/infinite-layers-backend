@@ -1,6 +1,7 @@
 package com.infiniteprints.platform.ecommerce.cart.controller;
 
 import java.security.Principal;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,7 +46,18 @@ public class CartController {
     public CartResponse getCart(Principal p) {
         return cartService.getCart(getUserId(p));
     }
+    @PutMapping("/items/{itemId}")
+    public CartResponse updateItem(
+            Principal p,
+            @PathVariable UUID itemId,
+            @RequestBody Map<String, Integer> body) {
 
+        return cartService.updateItem(
+            getUserId(p),
+            itemId,
+            body.get("quantity")
+        );
+    }
     /**
      * Add item to cart
      * Example:

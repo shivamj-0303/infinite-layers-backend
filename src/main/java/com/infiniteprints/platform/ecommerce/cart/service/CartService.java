@@ -60,7 +60,7 @@ public class CartService {
                 .sum();
 
         if (stock < existingQty + qty) {
-            throw new RuntimeException("Insufficient stock");
+            throw new BadRequestException("Insufficient stock");
         }
 
         CartItem item = cart.getItems().stream()
@@ -118,12 +118,13 @@ public class CartService {
 
         return r;
     }
-    public CartResponse removeItem(UUID userId, UUID productId) {
+    public CartResponse removeItem(UUID userId, UUID itemId) {
+        System.out.println("Removing item from cart: userId=" + userId + ", itemId=" + itemId);
 
         Cart cart = getOrCreateCart(userId);
 
         CartItem item = cart.getItems().stream()
-                .filter(i -> i.getProductId().equals(productId))
+                .filter(i -> i.getId().equals(itemId))
                 .findFirst()
                 .orElseThrow(() ->
                         new RuntimeException("Item not found in cart")
@@ -134,5 +135,41 @@ public class CartService {
         cartRepository.save(cart);
 
         return toResponse(cart);
+    }
+
+    public CartResponse updateItem(UUID userId, UUID itemId, int qty) {
+
+        if (qty <= 0) {
+            throw new RuntimeException("Quantity must be greater than 0");
+        }
+
+        Cart cart = getOrCreateCart(userId);
+
+        CartItem item = cart.getItems().stream()
+                .filter(i -> i.getId().equals(itemId)) // ✅ correct
+                .findFirst()
+                .orElseThrow(() ->
+                        new RuntimeException("Item not found in cart")
+                );
+
+        Product product = productRepository.findById(item.getProductId())
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        int stock = product.getStockQuantity() == null ? 0 : product.getStockQuantity();
+
+        if (qty > stock) {
+            throw new BadRequestException("Insufficient stock");
+        }
+
+        item.setQuantity(qty);
+
+        cartRepository.save(cart);
+
+        return toResponse(cart);
+    }
+    public class BadRequestException extends RuntimeException {
+        public BadRequestException(String message) {
+            super(message);
+        }
     }
 }

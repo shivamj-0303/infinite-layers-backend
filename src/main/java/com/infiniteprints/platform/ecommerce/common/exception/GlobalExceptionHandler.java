@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import com.infiniteprints.platform.ecommerce.cart.service.CartService.BadRequestException;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -114,5 +116,11 @@ public class GlobalExceptionHandler {
 
         log.error("Unexpected error occurred", ex);
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<?> handleBadRequest(BadRequestException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(Map.of("message", ex.getMessage()));
     }
 }
