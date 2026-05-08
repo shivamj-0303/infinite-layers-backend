@@ -1,5 +1,6 @@
 package com.infiniteprints.platform.ecommerce.order.controller;
 
+import com.infiniteprints.platform.ecommerce.auth.repository.UserRepository;
 import com.infiniteprints.platform.ecommerce.order.entity.Order;
 import com.infiniteprints.platform.ecommerce.order.service.OrderService;
 import org.springframework.data.domain.Page;
@@ -15,13 +16,25 @@ import java.util.UUID;
 public class OrderController {
 
     private final OrderService orderService;
+    private final UserRepository userRepository;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(
+        OrderService orderService,
+        UserRepository userRepository
+    ) {
         this.orderService = orderService;
+        this.userRepository = userRepository;
     }
 
     private UUID getUserId(Principal p) {
-        return UUID.fromString(p.getName());
+        String email = p.getName();
+
+        UUID userId = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found with email: " + email)
+                )
+                .getId();
+        return userId;
     }
 
     @PostMapping

@@ -33,6 +33,21 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "address_line1")
+    private String addressLine1;
+
+    @Column(name = "address_city")
+    private String addressCity;
+
+    @Column(name = "address_state")
+    private String addressState;
+
+    @Column(name = "address_pincode")
+    private String addressPincode;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
@@ -91,4 +106,19 @@ public class User {
     public void setRoles(Set<String> roles) {
         this.roles = roles;
     }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getAddressLine1() { return addressLine1; }
+    public void setAddressLine1(String addressLine1) { this.addressLine1 = addressLine1; }
+
+    public String getAddressCity() { return addressCity; }
+    public void setAddressCity(String addressCity) { this.addressCity = addressCity; }
+
+    public String getAddressState() { return addressState; }
+    public void setAddressState(String addressState) { this.addressState = addressState; }
+
+    public String getAddressPincode() { return addressPincode; }
+    public void setAddressPincode(String addressPincode) { this.addressPincode = addressPincode; }
 }

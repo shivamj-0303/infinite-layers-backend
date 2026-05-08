@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
+import com.infiniteprints.platform.ecommerce.auth.repository.UserRepository;
 import com.infiniteprints.platform.ecommerce.product.entity.Product;
 import com.infiniteprints.platform.ecommerce.wishlist.service.WishlistService;
 
@@ -21,13 +22,24 @@ import com.infiniteprints.platform.ecommerce.wishlist.service.WishlistService;
 public class WishlistController {
 
     private final WishlistService wishlistService;
+    private final UserRepository userRepository;
 
-    public WishlistController(WishlistService wishlistService) {
+    public WishlistController(
+        WishlistService wishlistService,
+        UserRepository userRepository
+    ) {
         this.wishlistService = wishlistService;
+        this.userRepository = userRepository;
     }
-
     private UUID getUserId(Principal p) {
-        return UUID.fromString(p.getName());
+        String email = p.getName();
+
+        UUID userId = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found with email: " + email)
+                )
+                .getId();
+        return userId;
     }
 
     @GetMapping

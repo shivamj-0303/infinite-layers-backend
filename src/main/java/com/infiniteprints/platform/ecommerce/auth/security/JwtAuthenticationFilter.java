@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 Claims claims = tokenProvider.getAllClaimsFromToken(jwt);
 
-                String username = claims.getSubject();
+                String userId = claims.getSubject();
                 List<String> roles = claims.get("roles", List.class);
 
                 var authorities = roles.stream()
@@ -46,19 +46,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .toList();
 
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                username,
-                                null,
-                                authorities
-                        );
+                    new UsernamePasswordAuthenticationToken(
+                        userId,
+                        null,
+                        authorities
+                    );
 
                 authentication.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                log.debug("Authenticated user: {} with roles {}", username, authorities);
             }
 
         } catch (Exception ex) {
