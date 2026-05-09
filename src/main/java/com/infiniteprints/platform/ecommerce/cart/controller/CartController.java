@@ -34,14 +34,7 @@ public class CartController {
      * Resolve authenticated user's UUID using email from JWT principal
      */
     private UUID getUserId(Principal p) {
-
-        String email = p.getName();
-
-        return userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("User not found with email: " + email)
-                )
-                .getId();
+        return UUID.fromString(p.getName());
     }
 
     /**

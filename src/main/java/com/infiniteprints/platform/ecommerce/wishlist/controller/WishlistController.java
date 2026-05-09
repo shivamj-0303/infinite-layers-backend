@@ -32,14 +32,7 @@ public class WishlistController {
         this.userRepository = userRepository;
     }
     private UUID getUserId(Principal p) {
-        String email = p.getName();
-
-        UUID userId = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("User not found with email: " + email)
-                )
-                .getId();
-        return userId;
+        return UUID.fromString(p.getName());
     }
 
     @GetMapping
