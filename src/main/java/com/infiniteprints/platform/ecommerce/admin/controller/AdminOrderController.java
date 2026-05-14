@@ -1,10 +1,15 @@
 package com.infiniteprints.platform.ecommerce.admin.controller;
 
+import com.infiniteprints.platform.ecommerce.admin.dto.UpdateOrderStatusRequest;
+import com.infiniteprints.platform.ecommerce.common.exception.ResourceNotFoundException;
+import com.infiniteprints.platform.ecommerce.common.exception.ValidationException;
+import com.infiniteprints.platform.ecommerce.order.repository.OrderRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -15,34 +20,47 @@ import java.util.UUID;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminOrderController {
 
-    /**
-     * Get all orders - returns empty list for now
-     */
+    private final OrderRepository orderRepository;
+
+    public AdminOrderController(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
+
     @GetMapping
     public ResponseEntity<?> getAllOrders(Pageable pageable) {
-        return ResponseEntity.ok(new java.util.ArrayList<>());
+        return ResponseEntity.ok(orderRepository.findAll(pageable));
     }
 
-    /**
-     * Get single order
-     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getOrder(@PathVariable UUID id) {
-        return ResponseEntity.ok(new java.util.HashMap<>());
+        return ResponseEntity.ok(orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found")));
     }
 
-    /**
-     * Update order status
-     */
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateOrderStatus(
             @PathVariable UUID id,
-            @RequestParam String status) {
-        java.util.Map<String, Object> response = new java.util.HashMap<>();
-        response.put("id", id);
-        response.put("status", status);
-        response.put("message", "Order status updated successfully");
-        return ResponseEntity.ok(response);
+            @RequestBody UpdateOrderStatusRequest request) {
+
+        String status = normalizeStatus(request.getStatus());
+        var order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        order.setStatus(status);
+        return ResponseEntity.ok(orderRepository.save(order));
+    }
+
+    private String normalizeStatus(String status) {
+        if (status == null || status.trim().isEmpty()) {
+            throw new ValidationException("Order status is required");
+        }
+
+        String normalized = status.trim().toUpperCase(Locale.ROOT);
+        if (!java.util.Set.of("PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED").contains(normalized)) {
+            throw new ValidationException("Unsupported order status");
+        }
+
+        return normalized;
     }
 
     /**

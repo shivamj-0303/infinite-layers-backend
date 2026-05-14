@@ -1,9 +1,8 @@
 package com.infiniteprints.platform.ecommerce.order.controller;
 
-import com.infiniteprints.platform.ecommerce.auth.repository.UserRepository;
+import com.infiniteprints.platform.ecommerce.order.dto.PlaceOrderRequest;
 import com.infiniteprints.platform.ecommerce.order.entity.Order;
 import com.infiniteprints.platform.ecommerce.order.service.OrderService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,14 +15,9 @@ import java.util.UUID;
 public class OrderController {
 
     private final OrderService orderService;
-    private final UserRepository userRepository;
 
-    public OrderController(
-        OrderService orderService,
-        UserRepository userRepository
-    ) {
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
-        this.userRepository = userRepository;
     }
 
     private UUID getUserId(Principal p) {
@@ -32,7 +26,19 @@ public class OrderController {
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    public Order placeOrder(Principal p) {
-        return orderService.placeOrder(getUserId(p));
+    public Order placeOrder(Principal p, @RequestBody PlaceOrderRequest request) {
+        return orderService.placeOrder(getUserId(p), request);
+    }
+
+    @GetMapping
+    @PreAuthorize("isAuthenticated()")
+    public Object getOrders(Principal p, Pageable pageable) {
+        return orderService.getOrders(getUserId(p), pageable);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public Order getOrder(Principal p, @PathVariable UUID id) {
+        return orderService.getOrder(getUserId(p), id);
     }
 }

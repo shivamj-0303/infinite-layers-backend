@@ -1,5 +1,6 @@
 package com.infiniteprints.platform.ecommerce.order.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -14,6 +15,8 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     // Get all orders for a specific user (used in user dashboard)
     Page<Order> findByUserId(UUID userId, Pageable pageable);
+
+    Optional<Order> findByIdAndUserId(UUID id, UUID userId);
 
     // Admin: filter by status (e.g., PENDING, SHIPPED, DELIVERED)
     Page<Order> findByStatus(String status, Pageable pageable);

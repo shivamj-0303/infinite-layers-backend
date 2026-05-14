@@ -22,7 +22,11 @@ public class OrderItem {
 
     private BigDecimal price; // snapshot
 
+    public UUID getId() { return id; }
+    public UUID getProductId() { return productId; }
     public void setProductId(UUID id) { this.productId = id; }
+    public Integer getQuantity() { return quantity; }
     public void setQuantity(Integer q) { this.quantity = q; }
+    public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal p) { this.price = p; }
 }
