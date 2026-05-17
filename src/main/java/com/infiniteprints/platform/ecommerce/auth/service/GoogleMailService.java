@@ -1,9 +1,13 @@
 package com.infiniteprints.platform.ecommerce.auth.service;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -44,18 +48,20 @@ public class GoogleMailService {
 
             String subject = "Verify your account";
 
-            String body =
-                    "Your OTP is: "
-                            + otp
-                            + "\n\n"
-                            + "This OTP expires in 5 minutes.";
+            String template = Files.readString(
+                        Paths.get("src/main/resources/templates/otp-email.html")
+                );
+
+            String body = template.replace("{{OTP}}", otp);
 
             String rawEmail =
-                    "From: " + senderEmail + "\r\n"
-                            + "To: " + recipientEmail + "\r\n"
-                            + "Subject: " + subject + "\r\n"
-                            + "\r\n"
-                            + body;
+                "From: Infinite Layers <" + senderEmail + ">\r\n"
+                        + "To: " + recipientEmail + "\r\n"
+                        + "Subject: " + subject + "\r\n"
+                        + "MIME-Version: 1.0\r\n"
+                        + "Content-Type: text/html; charset=UTF-8\r\n"
+                        + "\r\n"
+                        + body;
 
             String encodedEmail = Base64
                     .getUrlEncoder()
