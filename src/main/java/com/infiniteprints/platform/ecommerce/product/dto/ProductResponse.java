@@ -21,6 +21,10 @@ public class ProductResponse {
     public List<ImageResponse> images;
     public Instant createdAt;
     public Instant updatedAt;
+    public BigDecimal length;
+    public BigDecimal width;
+    public BigDecimal height;
+    public BigDecimal weight;
 
     public static class ImageResponse {
         public UUID id;

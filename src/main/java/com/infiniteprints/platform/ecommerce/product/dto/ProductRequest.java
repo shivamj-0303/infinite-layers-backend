@@ -16,4 +16,15 @@ public class ProductRequest {
     public UUID categoryId;
     public Boolean isActive = true;
     public Boolean isFeatured = false;
+    @DecimalMin("0.0")
+    public BigDecimal length;
+
+    @DecimalMin("0.0")
+    public BigDecimal width;
+
+    @DecimalMin("0.0")
+    public BigDecimal height;
+
+    @DecimalMin("0.0")
+    public BigDecimal weight;
 }

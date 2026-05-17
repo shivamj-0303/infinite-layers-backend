@@ -170,6 +170,10 @@ public class ProductService {
         p.setCategoryId(req.categoryId);
         p.setIsActive(req.isActive == null ? true : req.isActive);
         p.setIsFeatured(req.isFeatured == null ? false : req.isFeatured);
+        p.setLength(req.length);
+        p.setWidth(req.width);
+        p.setHeight(req.height);
+        p.setWeight(req.weight);
     }
 
     private ProductResponse toResponse(Product p) {
@@ -188,6 +192,10 @@ public class ProductService {
         r.isFeatured = p.getIsFeatured();
         r.createdAt = p.getCreatedAt();
         r.updatedAt = p.getUpdatedAt();
+        r.length = p.getLength();
+        r.width = p.getWidth();
+        r.height = p.getHeight();
+        r.weight = p.getWeight();
 
         r.images = p.getImages().stream().map(img -> {
             ProductResponse.ImageResponse ir = new ProductResponse.ImageResponse();

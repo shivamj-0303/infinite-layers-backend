@@ -55,6 +55,18 @@ public class Product {
     @Column(name = "updated_at")
     private Instant updatedAt = Instant.now();
 
+    @Column(precision = 10, scale = 2)
+    private BigDecimal length;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal width;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal height;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal weight;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "product_id")
     private List<ProductImage> images = new ArrayList<>();
@@ -93,4 +105,35 @@ public class Product {
     public Instant getUpdatedAt() { return updatedAt; }
     public List<ProductImage> getImages() { return images; }
     public void setImages(List<ProductImage> images) { this.images = images; }
+    public BigDecimal getLength() {
+        return length;
+    }
+
+    public void setLength(BigDecimal length) {
+        this.length = length;
+    }
+
+    public BigDecimal getWidth() {
+        return width;
+    }
+
+    public void setWidth(BigDecimal width) {
+        this.width = width;
+    }
+
+    public BigDecimal getHeight() {
+        return height;
+    }
+
+    public void setHeight(BigDecimal height) {
+        this.height = height;
+    }
+
+    public BigDecimal getWeight() {
+        return weight;
+    }
+
+    public void setWeight(BigDecimal weight) {
+        this.weight = weight;
+    }
 }
